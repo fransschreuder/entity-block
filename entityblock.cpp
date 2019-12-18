@@ -389,7 +389,14 @@ void EntityBlock::paint(QPainter &painter)
     //Divide the ports in 4 groups. input, clock and reset are on the left, but grouped together. Output ports on the right.
     for(int i=0; i<ports.size(); i++)
     {
-        if(ports[i].direction==in) //in and linkage go left, but clock and reset on the bottom left.
+        if(ports[i].name.startsWith("s_axi")||
+           ports[i].name.startsWith("slave_")
+                )
+            inputPorts.push_back(ports[i]);
+        else if(ports[i].name.startsWith("m_axi")||
+            ports[i].name.startsWith("master_"))
+            outputPorts.push_back(ports[i]);
+        else if(ports[i].direction==in) //in and linkage go left, but clock and reset on the bottom left.
         {
             if(ports[i].name.contains("clk", Qt::CaseInsensitive)||
                ports[i].name.contains("clock", Qt::CaseInsensitive))
