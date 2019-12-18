@@ -68,8 +68,7 @@ This entity:
 
 converts into this:
 
-![Alt text](./CrcGenerator.svg)
-<img src="./CrcGenerator.svg">
+![CrcGenerator.svg](./CrcGenerator.svg)
 
 # Known issues
 
