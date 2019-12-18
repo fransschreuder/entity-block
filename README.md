@@ -5,11 +5,27 @@ Converts a VHDL entity to a nice looking image in .svg format.
 # build
 
 Dependencies: Qt5. On a fresh Ubuntu install you can install the dependencies like this:
-    sudo apt install build-essential qt5-default
+
+    sudo apt install build-essential qt5-default cmake
+
+There are two possible ways to build entity-block:
+
+1. With qmake:
 
 
-    qmake entity-block.pro
+    qmake .
     make
+    #If you want to install system wide:
+    sudo make install 
+
+2. With cmake
+
+
+    cmake .
+    make
+    #If you want to install system wide:
+    sudo make install
+
 
 # Usage
 

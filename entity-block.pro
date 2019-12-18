@@ -9,6 +9,8 @@ QT       += core gui svg
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = entity-block
+TARGET.path = /usr/local/bin
+TARGET.files = entity-block
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -29,3 +31,5 @@ SOURCES += \
 
 HEADERS += \
         entityblock.h
+
+INSTALLS += TARGET
