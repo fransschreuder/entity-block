@@ -165,6 +165,7 @@ int main(int argc, char *argv[])
         bool ok;
         int c = parser.value(cornerRadiusOption).toInt(&ok);
         if(!ok) c = 10;
+        else if(c < 0) c*=-1;
         settings->setValue("Dimensions/cornerRadius",c);
     }
     if(parser.isSet(borderWidthOption))
