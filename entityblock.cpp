@@ -212,6 +212,8 @@ void EntityBlock::parseEntityString(QString entityString)
         {
             Port port;
             port.comment=comments[i].simplified();
+            if(port.comment.startsWith("!"))
+                port.comment = port.comment.mid(1,-1).simplified(); //Remove doxygen style comment that starts with --!
             int colonSep = portStrings[i].indexOf(":");
             int defSep = portStrings[i].indexOf(":=");
             port.name=portStrings[i].mid(0,colonSep).simplified();
@@ -274,6 +276,8 @@ void EntityBlock::parseEntityString(QString entityString)
         {
             Port port;
             port.comment=comments[i].simplified();
+            if(port.comment.startsWith("!"))
+                port.comment = port.comment.mid(1,-1).simplified(); //Remove doxygen style comment that starts with --!
             int colonSep = portStrings[i].indexOf(":");
             int defSep = portStrings[i].indexOf(":=");
             port.name=portStrings[i].mid(0,colonSep).simplified();
