@@ -92,3 +92,7 @@ converts into this:
     * To work around this issue, start entity block with the argument `-platform offscreen`
 * The paint function is called twice for now, in order to determine the SVG size, then it is drawn again. 
     * This could be done a little neater but it works.
+    
+# License
+
+GPL v3 [LICENSE](./LICENSE).
