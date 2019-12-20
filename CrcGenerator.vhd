@@ -11,7 +11,9 @@ entity CrcGenerator is
     REVERSEOUTPUT : std_logic                     := '1'; --Reverse 32 bits in CRC output
     INITVAL       : std_logic_vector(31 downto 0) := X"FFFFFFFF"; --Initial value of the CRC when sReset 
     FINALXOR      : std_logic_vector(31 downto 0) := X"FFFFFFFF"; --Set to FFFFFFFF to invert CRC output
-    -- Generator polynomial is
+    -----------------------------
+    -- Generator polynomial is --
+    -----------------------------
     POLYNOMIAL    : std_logic_vector(31 downto 0) := X"04C11DB7"
     );
   port (
