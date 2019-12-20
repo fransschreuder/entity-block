@@ -86,6 +86,14 @@ converts into this:
 
 ![CrcGenerator.svg](./CrcGenerator.svg)
 
+## Special placement of ports
+* Input ports will be placed on the left side
+* Output ports will be placed on the right side
+* Input ports with the keyword rst or reset in their name will be grouped together
+* Input ports with the keyword clk or clock in their name will be grouped together
+* Ports with the keywords s_axi or slave, as well as ports with "L " in their comment will be placed on the left side
+* Ports with the keywords m_axi or master, as well as ports with "R " in their comment will be placed on the right side
+
 # Known issues
 
 * The application does not work without a graphical session (X-server etc).
