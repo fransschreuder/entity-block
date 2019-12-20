@@ -79,7 +79,7 @@ bool EntityBlock::loadFile(QString fileName)
         {
             libraries.push_back(line);
         }
-        if(searchNoComments(line.toLower(),"entity")!=-1&&!entityFound)
+        if(searchNoComments(line.toLower(),"entity", 0)!=-1&&!entityFound)
         {
             entityString = line;
             entityBusy = true;
@@ -88,13 +88,13 @@ bool EntityBlock::loadFile(QString fileName)
         if(entityBusy)
         {
             entityString.append("\n"+line);
-            if(searchNoComments(entityString.toLower(),"is")!=-1 && entityName.length()==0) //determine the name of the entity
+            if(searchNoComments(entityString.toLower()," is",0)!=-1 && entityName.length()==0) //determine the name of the entity
             {
-                entityName = entityString.split("entity", QString::KeepEmptyParts, Qt::CaseInsensitive)[1];
-                entityName = entityName.split("is", QString::KeepEmptyParts, Qt::CaseInsensitive)[0].simplified();
+                entityName = entityString.split("entity ", QString::KeepEmptyParts, Qt::CaseInsensitive)[1];
+                entityName = entityName.split(" is", QString::KeepEmptyParts, Qt::CaseInsensitive)[0].simplified();
                 //printf("Entity Name: \"%s\"\n", entityName.toLocal8Bit().data());
             }
-            if(line.simplified().toLower().startsWith("end ")&&line.contains(";"))
+            if(line.simplified().toLower().startsWith("end")&&line.contains(";"))
             {
                 entityBusy = false;
                 parseEntityString(entityString);
@@ -107,10 +107,11 @@ bool EntityBlock::loadFile(QString fileName)
     return true;
 }
 
-int EntityBlock::searchNoComments(QString string, QString seed)
+int EntityBlock::searchNoComments(QString string, QString seed, int from)
 {
-    QStringList sComments = string.split("\n");
-    QStringList sNoComments = string.split("\n");
+    QString s=string.mid(from,-1);
+    QStringList sComments = s.split("\n");
+    QStringList sNoComments = s.split("\n");
     int index=0;
     for(int i=0; i< sNoComments.size(); i++)
     {
@@ -120,7 +121,7 @@ int EntityBlock::searchNoComments(QString string, QString seed)
         }
         int n = sNoComments[i].indexOf(seed);
         if(n>=0)
-            return index+n;
+            return index+n+from;
         index += sComments[i].length()+1; //+1 for the newline
     }
     return -1;
@@ -165,14 +166,18 @@ void EntityBlock::parseEntityString(QString entityString)
 {
     ports.clear();
     generics.clear();
-    if(searchNoComments(entityString.toLower(),"generic")!=-1)
+    int genericEnd=0;
+    if(searchNoComments(entityString.toLower(),"generic",0)!=-1)
     {
         QStringList comments;
         QString portString;
         QStringList lines;
-        portString = entityString.mid(searchNoComments(entityString.toLower(), "generic"),-1); //Take the whole string from the keyword generic
-        portString = portString.mid(searchNoComments(portString,"(")+1,-1);
-        portString = portString.mid(0,searchCloseBracket(portString));
+        portString = entityString.mid(searchNoComments(entityString.toLower(), "generic",0),-1); //Take the whole string from the keyword generic
+        portString = portString.mid(searchNoComments(portString,"(",0)+1,-1);
+        genericEnd = searchCloseBracket(portString);
+        int addGenericEnd = entityString.length()-portString.length();
+        portString = portString.mid(0,genericEnd);
+        genericEnd += addGenericEnd;
 
         lines = portString.split("\n", QString::SkipEmptyParts);
         int PortsStripped = 0;
@@ -233,13 +238,13 @@ void EntityBlock::parseEntityString(QString entityString)
         }
     }
 
-    if(searchNoComments(entityString.toLower(),"port")!=-1)
+    if(searchNoComments(entityString.toLower(),"port",genericEnd)!=-1)
     {
         QStringList comments;
         QString portString;
         QStringList lines;
-        portString = entityString.mid(searchNoComments(entityString.toLower(), "port"),-1); //Take the whole string from the keyword generic
-        portString = portString.mid(searchNoComments(portString,"(")+1,-1);
+        portString = entityString.mid(searchNoComments(entityString.toLower(), "port",genericEnd),-1); //Take the whole string from the keyword port
+        portString = portString.mid(searchNoComments(portString,"(",0)+1,-1);
         portString = portString.mid(0,searchCloseBracket(portString));
         lines = portString.split("\n", QString::SkipEmptyParts);
         int PortsStripped = 0;
@@ -400,12 +405,21 @@ void EntityBlock::paint(QPainter &painter)
     for(int i=0; i<ports.size(); i++)
     {
         if(ports[i].name.startsWith("s_axi")||
-           ports[i].name.contains("slave_")
-                )
+           ports[i].name.contains("slave_")||
+           ports[i].comment.startsWith("L "))
+        {
             inputPorts.push_back(ports[i]);
+            if(ports[i].comment.startsWith("L "))
+                inputPorts.back().comment = inputPorts.back().comment.mid(2,-1);
+        }
         else if(ports[i].name.startsWith("m_axi")||
-            ports[i].name.contains("master_"))
+            ports[i].name.contains("master_")||
+            ports[i].comment.startsWith("R "))
+        {
             outputPorts.push_back(ports[i]);
+            if(ports[i].comment.startsWith("R "))
+                outputPorts.back().comment = outputPorts.back().comment.mid(2,-1);
+        }
         else if(ports[i].direction==in) //in and linkage go left, but clock and reset on the bottom left.
         {
             if(ports[i].name.contains("clk", Qt::CaseInsensitive)||

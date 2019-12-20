@@ -109,9 +109,10 @@ private:
      * @brief searchNoComments is a helper function to find a string, but it skips vhdl comments marked as --
      * @param string Text to search through
      * @param seed Text to search for
+     * @param from Start searching from this position in the string
      * @return position of text found, -1 if not found.
      */
-    int searchNoComments(QString string, QString seed);
+    int searchNoComments(QString string, QString seed, int from);
 
     /**
      * @brief searchCloseBracket Searches the location of the first unmatched close bracket ).
