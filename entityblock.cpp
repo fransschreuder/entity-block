@@ -28,7 +28,7 @@ Port::Port()
     direction = in;
 }
 
-EntityBlock::EntityBlock(QString fileName, QString targetName, QSettings* s)
+EntityBlock::EntityBlock(QString fileName, QString targetName, QSettings* s, bool simplifiedSymbol)
 {
     settings = s;
     cComment = settings->value("Colors/comment",QColor(Qt::darkGreen)).value<QColor>();
@@ -45,6 +45,7 @@ EntityBlock::EntityBlock(QString fileName, QString targetName, QSettings* s)
     borderWidth = settings->value("Dimensions/borderWidth",int(2)).value<int>();
     spacing = 10;
     success = false;
+    createSimplifiedSymbol = simplifiedSymbol;
     if(fileName != "")
     {
         success = loadFile(fileName);
@@ -484,12 +485,20 @@ void EntityBlock::paint(QPainter &painter)
         painter.setPen(commentPen);
         painter.setFont(commentFont);
         QRect commentRect = painter.boundingRect(0, 0, 2000, 20, Qt::AlignLeft, generics[i].comment);
-        if(nameRect.height()+commentRect.height() > portH)
-            portH = nameRect.height()+commentRect.height();
-        if(nameRect.width()>genericWidth)
-            genericWidth = nameRect.width();
-        if(commentRect.width()>genericWidth)
-            genericWidth = commentRect.width();
+        if(createSimplifiedSymbol)
+        {
+            portH = nameRect.height();
+            genericWidth = 0;
+        }
+        else
+        {
+            if(nameRect.height()+commentRect.height() > portH)
+                portH = nameRect.height()+commentRect.height();
+            if(nameRect.width()>genericWidth)
+                genericWidth = nameRect.width();
+            if(commentRect.width()>genericWidth)
+                genericWidth = commentRect.width();
+        }
     }
     //Determine maximum width and height of input port labels
     for(int i=0; i<inputPorts.size(); i++)
@@ -505,17 +514,27 @@ void EntityBlock::paint(QPainter &painter)
         painter.setPen(typePen);
         painter.setFont(nameFont);
         QRect typeRect = painter.boundingRect(0, 0, 2000, 20, Qt::AlignLeft, typeString);
-        if(nameRect.height()+commentRect.height() > portH)
-            portH = nameRect.height()+commentRect.height();
-        if(nameRect.height() > nameH)
-            nameH = nameRect.height();
-        if(nameRect.width()>leftOuter)
-            leftOuter = nameRect.width();
-        if(commentRect.width()>leftInner)
-            leftInner = commentRect.width();
-        if(typeRect.width()>leftInner)
-            leftInner = typeRect.width();
-
+        if(createSimplifiedSymbol)
+        {
+            if(nameRect.height() > portH)
+                portH = nameRect.height();
+            leftOuter = 0;
+            if(nameRect.width()>leftInner)
+                leftInner = nameRect.width();
+        }
+        else
+        {
+            if(nameRect.height()+commentRect.height() > portH)
+                portH = nameRect.height()+commentRect.height();
+            if(nameRect.height() > nameH)
+                nameH = nameRect.height();
+            if(nameRect.width()>leftOuter)
+                leftOuter = nameRect.width();
+            if(commentRect.width()>leftInner)
+                leftInner = commentRect.width();
+            if(typeRect.width()>leftInner)
+                leftInner = typeRect.width();
+        }
     }
 
     //Determine maximum width and height of reset port labels
@@ -532,16 +551,27 @@ void EntityBlock::paint(QPainter &painter)
         painter.setPen(typePen);
         painter.setFont(nameFont);
         QRect typeRect = painter.boundingRect(0, 0, 2000, 20, Qt::AlignLeft, typeString);
-        if(nameRect.height()+commentRect.height() > portH)
-            portH = nameRect.height()+commentRect.height();
-        if(nameRect.height() > nameH)
-            nameH = nameRect.height();
-        if(nameRect.width()>leftOuter)
-            leftOuter = nameRect.width();
-        if(commentRect.width()>leftInner)
-            leftInner = commentRect.width();
-        if(typeRect.width()>leftInner)
-            leftInner = typeRect.width();
+        if(createSimplifiedSymbol)
+        {
+            if(nameRect.height() > portH)
+                portH = nameRect.height();
+            leftOuter = 0;
+            if(nameRect.width()>leftInner)
+                leftInner = nameRect.width();
+        }
+        else
+        {
+            if(nameRect.height()+commentRect.height() > portH)
+                portH = nameRect.height()+commentRect.height();
+            if(nameRect.height() > nameH)
+                nameH = nameRect.height();
+            if(nameRect.width()>leftOuter)
+                leftOuter = nameRect.width();
+            if(commentRect.width()>leftInner)
+                leftInner = commentRect.width();
+            if(typeRect.width()>leftInner)
+                leftInner = typeRect.width();
+        }
 
     }
 
@@ -559,16 +589,27 @@ void EntityBlock::paint(QPainter &painter)
         painter.setPen(typePen);
         painter.setFont(nameFont);
         QRect typeRect = painter.boundingRect(0, 0, 2000, 20, Qt::AlignLeft, typeString);
-        if(nameRect.height()+commentRect.height() > portH)
-            portH = nameRect.height()+commentRect.height();
-        if(nameRect.height() > nameH)
-            nameH = nameRect.height();
-        if(nameRect.width()>leftOuter)
-            leftOuter = nameRect.width();
-        if(commentRect.width()>leftInner)
-            leftInner = commentRect.width();
-        if(typeRect.width()>leftInner)
-            leftInner = typeRect.width();
+        if(createSimplifiedSymbol)
+        {
+            if(nameRect.height() > portH)
+                portH = nameRect.height();
+            leftOuter = 0;
+            if(nameRect.width()>leftInner)
+                leftInner = nameRect.width();
+        }
+        else
+        {
+            if(nameRect.height()+commentRect.height() > portH)
+                portH = nameRect.height()+commentRect.height();
+            if(nameRect.height() > nameH)
+                nameH = nameRect.height();
+            if(nameRect.width()>leftOuter)
+                leftOuter = nameRect.width();
+            if(commentRect.width()>leftInner)
+                leftInner = commentRect.width();
+            if(typeRect.width()>leftInner)
+                leftInner = typeRect.width();
+        }
 
     }
 
@@ -586,16 +627,27 @@ void EntityBlock::paint(QPainter &painter)
         painter.setPen(typePen);
         painter.setFont(nameFont);
         QRect typeRect = painter.boundingRect(0, 0, 2000, 20, Qt::AlignLeft, typeString);
-        if(nameRect.height()+commentRect.height() > portH)
-            portH = nameRect.height()+commentRect.height();
-        if(nameRect.height() > nameH)
-            nameH = nameRect.height();
-        if(nameRect.width()>rightOuter)
-            rightOuter = nameRect.width();
-        if(commentRect.width()>rightInner)
-            rightInner= commentRect.width();
-        if(typeRect.width()>rightInner)
-            rightInner = typeRect.width();
+        if(createSimplifiedSymbol)
+        {
+            if(nameRect.height() > portH)
+                portH = nameRect.height();
+            rightOuter = 0;
+            if(nameRect.width()>rightInner)
+                rightInner = nameRect.width();
+        }
+        else
+        {
+            if(nameRect.height()+commentRect.height() > portH)
+                portH = nameRect.height()+commentRect.height();
+            if(nameRect.height() > nameH)
+                nameH = nameRect.height();
+            if(nameRect.width()>rightOuter)
+                rightOuter = nameRect.width();
+            if(commentRect.width()>rightInner)
+                rightInner= commentRect.width();
+            if(typeRect.width()>rightInner)
+                rightInner = typeRect.width();
+        }
 
     }
 
@@ -612,7 +664,8 @@ void EntityBlock::paint(QPainter &painter)
     imageHeight = (leftCount > outputPorts.size()? leftCount:outputPorts.size())*portH + (2*titleRect.height());
     int rectWidth = (titleRect.width()+(4*spacing)) > (leftInner+rightInner+(6*spacing))?titleRect.width()+(4*spacing): (leftInner+rightInner+(6*spacing));
     if(genericWidth+(4*spacing)>rectWidth)rectWidth = genericWidth+(4*spacing);
-    imageHeight += generics.size()*portH;
+    if(!createSimplifiedSymbol)
+            imageHeight += generics.size()*portH;
 
     imageWidth = leftOuter+(2*spacing) + rectWidth + rightOuter;
 
@@ -644,7 +697,7 @@ void EntityBlock::paint(QPainter &painter)
     painter.drawPath(p1);
 
     //Draw a line between ports and generics.
-    if(generics.size()>0)
+    if(generics.size()>0 && !createSimplifiedSymbol)
     {
         painter.drawLine(leftOuter+spacing, imageHeight-titleRect.height()-generics.size()*portH, leftOuter+spacing+rectWidth,imageHeight-titleRect.height()-generics.size()*portH);
     }
@@ -660,17 +713,26 @@ void EntityBlock::paint(QPainter &painter)
     //Draw input port names, type, comment and symbol
     for(int i=0; i<inputPorts.size(); i++)
     {
-        painter.setPen(namePen);
-        painter.setFont(nameFont);
-        painter.drawText(0,y+(portH-nameH)/2,leftOuter,portH,Qt::AlignRight, inputPorts[i].name);
-        painter.setPen(commentPen);
-        painter.setFont(commentFont);
-        painter.drawText(leftOuter+(2*spacing),y+nameH,leftInner,portH,Qt::AlignLeft, inputPorts[i].comment);
-        painter.setPen(typePen);
-        painter.setFont(nameFont);
-        QString typeString = inputPorts[i].type;
-        if(inputPorts[i].def!="")typeString += " ("+inputPorts[i].def+")";
-        painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, typeString);
+        if(!createSimplifiedSymbol)
+        {
+            painter.setPen(namePen);
+            painter.setFont(nameFont);
+            painter.drawText(0,y+(portH-nameH)/2,leftOuter,portH,Qt::AlignRight, inputPorts[i].name);
+            painter.setPen(commentPen);
+            painter.setFont(commentFont);
+            painter.drawText(leftOuter+(2*spacing),y+nameH,leftInner,portH,Qt::AlignLeft, inputPorts[i].comment);
+            painter.setPen(typePen);
+            painter.setFont(nameFont);
+            QString typeString = inputPorts[i].type;
+            if(inputPorts[i].def!="")typeString += " ("+inputPorts[i].def+")";
+            painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, typeString);
+        }
+        else
+        {
+            painter.setPen(namePen);
+            painter.setFont(nameFont);
+            painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, inputPorts[i].name);
+        }
         paintPortSymbol(painter,inputPorts[i].direction, leftOuter+(1*spacing), y+portH/2,false);
         y += portH;
     }
@@ -683,17 +745,26 @@ void EntityBlock::paint(QPainter &painter)
     //Draw reset port names, type, comment and symbol
     for(int i=0; i<resetPorts.size(); i++)
     {
-        painter.setPen(namePen);
-        painter.setFont(nameFont);
-        painter.drawText(0,y+(portH-nameH)/2,leftOuter,portH,Qt::AlignRight, resetPorts[i].name);
-        painter.setPen(commentPen);
-        painter.setFont(commentFont);
-        painter.drawText(leftOuter+(2*spacing),y+nameH,leftInner,portH,Qt::AlignLeft, resetPorts[i].comment);
-        painter.setPen(typePen);
-        painter.setFont(nameFont);
-        QString typeString = resetPorts[i].type;
-        if(resetPorts[i].def!="")typeString += " ("+resetPorts[i].def+")";
-        painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, typeString);
+        if(!createSimplifiedSymbol)
+        {
+            painter.setPen(namePen);
+            painter.setFont(nameFont);
+            painter.drawText(0,y+(portH-nameH)/2,leftOuter,portH,Qt::AlignRight, resetPorts[i].name);
+            painter.setPen(commentPen);
+            painter.setFont(commentFont);
+            painter.drawText(leftOuter+(2*spacing),y+nameH,leftInner,portH,Qt::AlignLeft, resetPorts[i].comment);
+            painter.setPen(typePen);
+            painter.setFont(nameFont);
+            QString typeString = resetPorts[i].type;
+            if(resetPorts[i].def!="")typeString += " ("+resetPorts[i].def+")";
+            painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, typeString);
+        }
+        else
+        {
+            painter.setPen(namePen);
+            painter.setFont(nameFont);
+            painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, resetPorts[i].name);
+        }
         paintPortSymbol(painter,resetPorts[i].direction, leftOuter+(1*spacing), y+portH/2,false);
         y += portH;
     }
@@ -705,17 +776,27 @@ void EntityBlock::paint(QPainter &painter)
     //Draw clock port names, type, comment and symbol
     for(int i=0; i<clockPorts.size(); i++)
     {
-        painter.setPen(namePen);
-        painter.setFont(nameFont);
-        painter.drawText(0,y+(portH-nameH)/2,leftOuter,portH,Qt::AlignRight, clockPorts[i].name);
-        painter.setPen(commentPen);
-        painter.setFont(commentFont);
-        painter.drawText(leftOuter+(2*spacing),y+nameH,leftInner,portH,Qt::AlignLeft, clockPorts[i].comment);
-        painter.setPen(typePen);
-        painter.setFont(nameFont);
-        QString typeString = clockPorts[i].type;
-        if(clockPorts[i].def!="")typeString += " ("+clockPorts[i].def+")";
-        painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, typeString);
+        if(!createSimplifiedSymbol)
+        {
+            painter.setPen(namePen);
+            painter.setFont(nameFont);
+            painter.drawText(0,y+(portH-nameH)/2,leftOuter,portH,Qt::AlignRight, clockPorts[i].name);
+            painter.setPen(commentPen);
+            painter.setFont(commentFont);
+            painter.drawText(leftOuter+(2*spacing),y+nameH,leftInner,portH,Qt::AlignLeft, clockPorts[i].comment);
+            painter.setPen(typePen);
+            painter.setFont(nameFont);
+            QString typeString = clockPorts[i].type;
+            if(clockPorts[i].def!="")typeString += " ("+clockPorts[i].def+")";
+            painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, typeString);
+
+        }
+        else
+        {
+            painter.setPen(namePen);
+            painter.setFont(nameFont);
+            painter.drawText(leftOuter+(2*spacing), y, leftInner, portH, Qt::AlignLeft, clockPorts[i].name);
+        }
         paintPortSymbol(painter,clockPorts[i].direction, leftOuter+(1*spacing), y+portH/2,false);
         y += portH;
     }
@@ -727,35 +808,48 @@ void EntityBlock::paint(QPainter &painter)
     //Draw output port names, type, comment and symbol
     for(int i=0; i<outputPorts.size(); i++)
     {
-        painter.setPen(namePen);
-        painter.setFont(nameFont);
-        painter.drawText(imageWidth-rightOuter,y+(portH-nameH)/2,rightOuter,portH,Qt::AlignLeft, outputPorts[i].name);
-        painter.setPen(commentPen);
-        painter.setFont(commentFont);
-        painter.drawText(imageWidth - rightOuter - rightInner -(2*spacing),y+nameH,rightInner,portH,Qt::AlignRight, outputPorts[i].comment);
-        painter.setPen(typePen);
-        painter.setFont(nameFont);
-        QString typeString = outputPorts[i].type;
-        if(outputPorts[i].def!="")typeString += " ("+outputPorts[i].def+")";
-        painter.drawText(imageWidth - rightOuter - rightInner -(2*spacing), y, rightInner, portH, Qt::AlignRight, typeString);
+        if(!createSimplifiedSymbol)
+        {
+            painter.setPen(namePen);
+            painter.setFont(nameFont);
+            painter.drawText(imageWidth-rightOuter,y+(portH-nameH)/2,rightOuter,portH,Qt::AlignLeft, outputPorts[i].name);
+            painter.setPen(commentPen);
+            painter.setFont(commentFont);
+            painter.drawText(imageWidth - rightOuter - rightInner -(2*spacing),y+nameH,rightInner,portH,Qt::AlignRight, outputPorts[i].comment);
+            painter.setPen(typePen);
+            painter.setFont(nameFont);
+            QString typeString = outputPorts[i].type;
+            if(outputPorts[i].def!="")typeString += " ("+outputPorts[i].def+")";
+            painter.drawText(imageWidth - rightOuter - rightInner -(2*spacing), y, rightInner, portH, Qt::AlignRight, typeString);
+
+        }
+        else
+        {
+            painter.setPen(namePen);
+            painter.setFont(nameFont);
+            painter.drawText(imageWidth - rightOuter - rightInner -(2*spacing), y, rightInner, portH, Qt::AlignRight, outputPorts[i].name);
+        }
         paintPortSymbol(painter,outputPorts[i].direction, imageWidth-rightOuter-(1*spacing), y+portH/2,true);
         y += portH;
     }
 
-    //Draw generics.
-    if(y<genericY)y=genericY;
-    for(int i=0; i<generics.size(); i++)
+    if(!createSimplifiedSymbol)
     {
-        painter.setPen(typePen);
-        painter.setFont(nameFont);
-        QString gText = generics[i].name + " : " + generics[i].type;
-        if(generics[i].def!="")
-            gText += " := " + generics[i].def;
-        painter.drawText(leftOuter + (2*spacing),y,rectWidth,portH,Qt::AlignLeft, gText);
-        painter.setPen(commentPen);
-        painter.setFont(commentFont);
-        painter.drawText(leftOuter + (2*spacing),y+nameH,rightOuter,portH,Qt::AlignLeft, generics[i].comment);
-        y+= portH;
+        //Draw generics.
+        if(y<genericY)y=genericY;
+        for(int i=0; i<generics.size(); i++)
+        {
+            painter.setPen(typePen);
+            painter.setFont(nameFont);
+            QString gText = generics[i].name + " : " + generics[i].type;
+            if(generics[i].def!="")
+                gText += " := " + generics[i].def;
+            painter.drawText(leftOuter + (2*spacing),y,rectWidth,portH,Qt::AlignLeft, gText);
+            painter.setPen(commentPen);
+            painter.setFont(commentFont);
+            painter.drawText(leftOuter + (2*spacing),y+nameH,rightOuter,portH,Qt::AlignLeft, generics[i].comment);
+            y+= portH;
+        }
     }
 }
 

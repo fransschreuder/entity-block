@@ -75,6 +75,9 @@ int main(int argc, char *argv[])
             "Change default line thickness to <number>",
             "number");
 
+    QCommandLineOption simplifiedSymbol(QStringList() << "S" << "symplified-symbol",
+            "Generate a symbol without types, comments and generics");
+
     parser.addOption(commentColorOption);
     parser.addOption(portNameColorOption);
     parser.addOption(portTypeColorOption);
@@ -87,6 +90,7 @@ int main(int argc, char *argv[])
     parser.addOption(cornerRadiusOption);
     parser.addOption(shadowColorOption);
     parser.addOption(borderWidthOption);
+    parser.addOption(simplifiedSymbol);
 
     // Process the actual command line arguments given by the user
     parser.process(a);
@@ -176,7 +180,7 @@ int main(int argc, char *argv[])
         settings->setValue("Dimensions/borderWidth",c);
     }
 
-    EntityBlock w(fileName,outputName, settings);
+    EntityBlock w(fileName,outputName, settings, parser.isSet(simplifiedSymbol));
     delete settings;
 
     return w.success?0:1;

@@ -54,7 +54,7 @@ public:
      * @param targetName SVG file to be stored
      * @param s
      */
-    EntityBlock(QString fileName = "", QString targetName="", QSettings* s=NULL);
+    EntityBlock(QString fileName = "", QString targetName="", QSettings* s=NULL, bool simplifiedSymbol=false);
     ~EntityBlock();
 
     /**
@@ -158,6 +158,7 @@ private:
     int cornerRadius;
     int borderWidth;
     int spacing;
+    bool createSimplifiedSymbol;
 
 
 };
