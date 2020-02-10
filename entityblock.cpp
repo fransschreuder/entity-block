@@ -405,7 +405,13 @@ void EntityBlock::paint(QPainter &painter)
     //Divide the ports in 4 groups. input, clock and reset are on the left, but grouped together. Output ports on the right.
     for(int i=0; i<ports.size(); i++)
     {
-        if(ports[i].name.startsWith("s_axi")||
+        if(ports[i].name.contains("clk", Qt::CaseInsensitive)||
+           ports[i].name.contains("clock", Qt::CaseInsensitive))
+           clockPorts.push_back(ports[i]);
+        else if (ports[i].name.contains("rst", Qt::CaseInsensitive)||
+                 ports[i].name.contains("reset", Qt::CaseInsensitive))
+            resetPorts.push_back(ports[i]);
+        else if(ports[i].name.startsWith("s_axi")||
            ports[i].name.contains("slave_")||
            ports[i].comment.startsWith("L "))
         {
@@ -423,15 +429,8 @@ void EntityBlock::paint(QPainter &painter)
         }
         else if(ports[i].direction==in) //in and linkage go left, but clock and reset on the bottom left.
         {
-            if(ports[i].name.contains("clk", Qt::CaseInsensitive)||
-               ports[i].name.contains("clock", Qt::CaseInsensitive))
-                clockPorts.push_back(ports[i]);
-            else if (ports[i].name.contains("rst", Qt::CaseInsensitive)||
-                     ports[i].name.contains("reset", Qt::CaseInsensitive))
-                resetPorts.push_back(ports[i]);
-            else
-                inputPorts.push_back(ports[i]);
-        }
+			inputPorts.push_back(ports[i]);
+	    }
         else if (ports[i].direction==linkage) {
             inputPorts.push_back(ports[i]);
         }
