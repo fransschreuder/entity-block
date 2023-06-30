@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <QDebug>
 #include <QtSvg/QSvgGenerator>
+#include <QPainterPath>
+#include <QFile>
 
 Port::Port()
 {
@@ -91,11 +93,13 @@ bool EntityBlock::loadFile(QString fileName)
             entityString.append("\n"+line);
             if(searchNoComments(entityString.toLower()," is",0)!=-1 && entityName.length()==0) //determine the name of the entity
             {
-                entityName = entityString.split("entity ", QString::KeepEmptyParts, Qt::CaseInsensitive)[1];
-                entityName = entityName.split(" is", QString::KeepEmptyParts, Qt::CaseInsensitive)[0].simplified();
+                entityName = entityString.split("entity ", Qt::KeepEmptyParts, Qt::CaseInsensitive)[1];
+                entityName = entityName.split(" is", Qt::KeepEmptyParts, Qt::CaseInsensitive)[0].simplified();
                 //printf("Entity Name: \"%s\"\n", entityName.toLocal8Bit().data());
             }
-            if(line.simplified().toLower().startsWith("end")&&line.contains(";"))
+            if((line.simplified().toLower().startsWith("end ")||
+                line.simplified().toLower().startsWith("end;"))
+                    &&line.contains(";"))
             {
                 entityBusy = false;
                 parseEntityString(entityString);
@@ -180,7 +184,7 @@ void EntityBlock::parseEntityString(QString entityString)
         portString = portString.mid(0,genericEnd);
         genericEnd += addGenericEnd;
 
-        lines = portString.split("\n", QString::SkipEmptyParts);
+        lines = portString.split("\n", Qt::SkipEmptyParts);
         int PortsStripped = 0;
         for(int i=0; i<lines.size(); i++) //First strip the comments and store them in comments
         {
@@ -247,7 +251,7 @@ void EntityBlock::parseEntityString(QString entityString)
         portString = entityString.mid(searchNoComments(entityString.toLower(), "port",genericEnd),-1); //Take the whole string from the keyword port
         portString = portString.mid(searchNoComments(portString,"(",0)+1,-1);
         portString = portString.mid(0,searchCloseBracket(portString));
-        lines = portString.split("\n", QString::SkipEmptyParts);
+        lines = portString.split("\n", Qt::SkipEmptyParts);
         int PortsStripped = 0;
         for(int i=0; i<lines.size(); i++) //First strip the comments and store them in comments
         {
@@ -405,15 +409,22 @@ void EntityBlock::paint(QPainter &painter)
     //Divide the ports in 4 groups. input, clock and reset are on the left, but grouped together. Output ports on the right.
     for(int i=0; i<ports.size(); i++)
     {
-        if(ports[i].name.contains("clk", Qt::CaseInsensitive)||
-           ports[i].name.contains("clock", Qt::CaseInsensitive))
+        if(!ports[i].comment.startsWith("R ")&&
+           !ports[i].comment.startsWith("L ")&&
+                ((ports[i].name.contains("clk", Qt::CaseInsensitive)||
+           ports[i].name.contains("clock", Qt::CaseInsensitive))&&
+                ports[i].direction==in))
            clockPorts.push_back(ports[i]);
-        else if (ports[i].name.contains("rst", Qt::CaseInsensitive)||
+        else if (!ports[i].comment.startsWith("R ")&&
+                 !ports[i].comment.startsWith("L ")&&
+                 ((ports[i].name.contains("rst", Qt::CaseInsensitive)||
                  ports[i].name.contains("reset", Qt::CaseInsensitive))
+                 &&ports[i].direction==in))
             resetPorts.push_back(ports[i]);
-        else if(ports[i].name.startsWith("s_axi")||
+        else if(!ports[i].comment.startsWith("R ")&&(
+                ports[i].name.startsWith("s_axi")||
            ports[i].name.contains("slave_")||
-           ports[i].comment.startsWith("L "))
+           ports[i].comment.startsWith("L ")))
         {
             inputPorts.push_back(ports[i]);
             if(ports[i].comment.startsWith("L "))
